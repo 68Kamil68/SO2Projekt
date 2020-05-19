@@ -6,7 +6,7 @@ int main(int argc, char ** argv) {
   initscr();
   refresh();
   for(int i=0; i < 10; i++) {
-    mvprintw(i, i, "*");
+    mvprintw(i, i, "xd");
     refresh();
     sleep(1);
     mvdelch(i, i);
