@@ -1,3 +1,6 @@
+#ifndef SOPROJEKT_PLAYER_H
+#define SOPROJEKT_PLAYER_H
+
 #include <tuple>
 
 class Player {
@@ -7,6 +10,9 @@ class Player {
         void Move();
 
     private:
-        int x, y;
+        int CurrX, CurrY;
+        int LastX, LastY;
         
 };
+
+#endif
