@@ -12,6 +12,7 @@ class Engine {
         void AddPoints(int points);
         void GenerateStar();
         std::vector<Star*> stars;
+        int gamespeed;
 
     private:
         int time;

@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include "player.h"
+#include "engine.h"
 #include <thread>
 using namespace std;
 
@@ -21,7 +22,27 @@ int main(int argc, char ** argv)
 
     Player * p =new Player(win, 15,15, '#');
 
-    
+    Engine * engine = new Engine();
+
+    while (true)
+    {
+        engine->GenerateStar();
+        for(int i = 0; i < engine->stars.size(); i++) {
+            Star * star = engine->stars.at(i);
+            std::tuple<int, int> coords = star->GetCoords();
+            mvwaddch(win, std::get<0>(coords), std::get<1>(coords), ' ');
+            star->Move();
+            coords = star->GetCoords();
+            if(star->IsBonus()) {
+                mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '+');
+            } else
+            {
+                mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '*');
+            }
+            wrefresh(win);
+        }
+    }
+       
     do
     {
         curs_set(0);
