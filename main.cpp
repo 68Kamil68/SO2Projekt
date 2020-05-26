@@ -3,7 +3,6 @@
 #include <thread>
 using namespace std;
 
-
 int main(int argc, char ** argv)
 {
     initscr();
@@ -34,5 +33,6 @@ int main(int argc, char ** argv)
     //int c = getch();
 
     endwin();
+
     return 0;
 }

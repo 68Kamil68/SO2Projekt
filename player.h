@@ -1,3 +1,6 @@
+#ifndef SOPROJEKT_PLAYER_H
+#define SOPROJEKT_PLAYER_H
+
 #include <tuple>
 #ifndef _PLAYER_H
 #define _PLAYER_H
@@ -13,8 +16,6 @@ class Player {
         void MoveRight();
         void display();
         int getMove();
-
-    private:
         int xLoc, yLoc, xMax, yMax;
         char character;
         WINDOW * currentWindow;
