@@ -3,12 +3,29 @@
 #include <vector>
 #include <thread>
 #include "star.h"
+#include "engine.h"
 using namespace std;
+
+
+void initWindow() {
+        initscr();
+        noecho();
+        curs_set(FALSE);
+        clear();
+        refresh();
+}
+
+void clearChar(int y, int x){
+    mvdelch(y, x);
+}
+
+void drawStar(int y, int x){
+    mvprintw(y, x, "*");
+}
 
 int main(int argc, char ** argv) {
 
     vector<thread> star_threads;
-    vector<Star*> stars;
 
     initscr();
     int h, w, y, x;
@@ -16,8 +33,6 @@ int main(int argc, char ** argv) {
     w=20;
     y=5;
     x=10;
-    bool bonus = true;
-    stars.push_back(new Star(h, bonus, y));
 
     WINDOW *window = newwin(h, w, y, x);
     
