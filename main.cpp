@@ -1,47 +1,36 @@
 #include <ncurses.h>
-#include <unistd.h>
-#include <vector>
+#include "player.h"
 #include <thread>
-#include "star.h"
-#include "engine.h"
 using namespace std;
 
-
-void initWindow() {
-        initscr();
-        noecho();
-        curs_set(FALSE);
-        clear();
-        refresh();
-}
-
-void clearChar(int y, int x){
-    mvdelch(y, x);
-}
-
-void drawStar(int y, int x){
-    mvprintw(y, x, "*");
-}
-
-int main(int argc, char ** argv) {
-
-    vector<thread> star_threads;
-
+int main(int argc, char ** argv)
+{
     initscr();
-    int h, w, y, x;
-    h=50;
-    w=20;
-    y=5;
-    x=10;
 
-    WINDOW *window = newwin(h, w, y, x);
+    int h, w, startY, startX;
+    h = 25;
+    w = 90;
+    startY = startX = 5;
     
+    WINDOW * win = newwin(h, w, startY, startX);
     refresh();
 
-    box(window, 0, 0);
-    wrefresh(window);
+    box(win, 0, 0);
+    mvwprintw(win, 24, 35, "Falling asteroids game");
+    wrefresh(win);
 
-    int c =getch();
+    Player * p =new Player(win, 15,15, '#');
+
+    
+    do
+    {
+        curs_set(0);
+        p->display();
+        wrefresh(win);
+    } while(p->getMove()!='q');
+    
+
+    //int c = getch();
 
     endwin();
 
