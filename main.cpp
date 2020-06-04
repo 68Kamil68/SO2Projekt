@@ -5,6 +5,7 @@
 using namespace std;
 
 //branch counter_and_points
+// git status, git add, git commit, git push origin (nazwa_brancha)
 
 int main(int argc, char ** argv)
 {
