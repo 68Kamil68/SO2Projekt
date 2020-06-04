@@ -4,6 +4,8 @@
 #include <thread>
 using namespace std;
 
+//branch counter_and_points
+
 int main(int argc, char ** argv)
 {
     initscr();

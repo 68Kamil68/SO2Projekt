@@ -2,7 +2,7 @@
 #define _PLAYER_H
 
 #include <tuple>
-
+#include <ncurses.h>
 class Player {
     public:
         Player(WINDOW * win, int y, int x, char c);
