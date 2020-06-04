@@ -1,10 +1,7 @@
-#ifndef SOPROJEKT_PLAYER_H
-#define SOPROJEKT_PLAYER_H
-
-#include <tuple>
 #ifndef _PLAYER_H
 #define _PLAYER_H
-#endif
+
+#include <tuple>
 
 class Player {
     public:
@@ -91,3 +88,5 @@ class Player {
     {
         mvwaddch(currentWindow, yLoc, xLoc, character);
     }
+
+#endif
