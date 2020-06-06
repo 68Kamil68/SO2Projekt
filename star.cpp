@@ -8,6 +8,8 @@ Star::Star(int x, bool isBonus, int speed, int id) {
     _y = 1;
 }
 
+Star::~Star() {}
+
 void Star:: Move() {
     _y +=  1;
 }

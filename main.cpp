@@ -5,13 +5,15 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
+#include <iostream>
+#include <atomic>
 
 using namespace std;
 
 //branch counter_and_points
 // git status, git add, git commit, git push origin (nazwa_brancha)
 
-
+std::atomic<bool> running;
 
 
 void Counter(WINDOW* counter_window, WINDOW* points_window) {
@@ -22,9 +24,7 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
     int help = 1;
     int move =10;
     int mins = 0;
-    const char *s = "sec";
-    const char *m = "min";
-    while (true)
+    while (running)
     {   
         curs_set(0);
         wrefresh(counter_window);
@@ -64,16 +64,28 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
     }
 }
 
-void GenerateStars(Engine* engine, WINDOW* win) {
-    while (true)
+void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
+    curs_set(0);
+    while (running)
     {
         engine->GenerateStar();
         for(int i = 0; i < engine->stars.size(); i++) {
             Star * star = engine->stars.at(i);
             std::tuple<int, int> coords = star->GetCoords();
             mvwaddch(win, std::get<0>(coords), std::get<1>(coords), ' ');
+            if (std::get<0>(coords) >= 23){
+                continue;
+            }
             star->Move();
             coords = star->GetCoords();
+            if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() != true)
+            {
+                running = false;
+            }
+            if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() == true)
+            {
+                engine-> points += 500;
+            }
             if(star->IsBonus()) {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '+');
             } else
@@ -81,21 +93,36 @@ void GenerateStars(Engine* engine, WINDOW* win) {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '*');
             }
             wrefresh(win);
+            usleep(100);
         }
     }
 }
 
 void MovePlayer(Player* p, WINDOW* win) {
-    do
+    while (running)
     {
         curs_set(0);
         p->display();
+        p->getMove();
         wrefresh(win);
-    } while(p->getMove()!='q');
+        usleep(100);
+    }
+    //exit(0);
 }
 
+void CollisionDetector(Player* player, Engine* engine){
+    while (running)
+    {
+        int size = engine->stars.size();
+        if(size != 0 ){
+            for (int i = 0; i < size; i++)
+            {
+                std::tuple<int, int> coords = engine->stars[i]->GetCoords();
 
-
+            }
+        }
+    }  
+}
 
 int main(int argc, char ** argv)
 {
@@ -130,15 +157,18 @@ int main(int argc, char ** argv)
 
     Player * p =new Player(win, 15,15, '#');
 
-    Engine * engine = new Engine(); 
+    Engine * engine = new Engine();
+    running = true; 
 
-    std::thread(MovePlayer, p, win);
-    std::thread(GenerateStars, engine, win);
-    std::thread(Counter, counter_window, points_window);
+    std::thread t1(MovePlayer, p, win);
+    std::thread t2(GenerateStars, engine, win, p);
+    std::thread t3(Counter, counter_window, points_window);
+    
+    t3.join();
+    t2.join();
+    t1.join();
 
-    int c = getch();
-
-    endwin();
+    //endwin();
 
     return 0;
 }
