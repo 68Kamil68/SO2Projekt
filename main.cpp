@@ -22,7 +22,7 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
     int points = 0;
     int multiplier =1;
     int help = 1;
-    int move =10;
+    int move = 10;
     int mins = 0;
     while (running)
     {   
@@ -84,7 +84,7 @@ void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
             }
             if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() == true)
             {
-                engine-> points += 500;
+                engine->AddPoints(100);
             }
             if(star->IsBonus()) {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '+');
