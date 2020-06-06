@@ -20,3 +20,23 @@ void Engine::GenerateStar() {
     this->stars.push_back(star);
     usleep(600000);
 }
+
+void Engine::AddPoints(int p){
+    points+=p;
+}
+
+int Engine::GetPoints(){
+    return points;
+}
+
+void Engine::SetPoints(int x){
+    points=x;
+}
+
+int Engine::GetTime(){
+    return time;
+}
+
+void Engine::SetTime(int t){
+    time=t;
+}

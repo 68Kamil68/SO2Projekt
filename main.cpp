@@ -16,10 +16,10 @@ using namespace std;
 std::atomic<bool> running;
 
 
-void Counter(WINDOW* counter_window, WINDOW* points_window) {
+void Counter(WINDOW* counter_window, WINDOW* points_window, Engine *engine) {
         
-    int seconds = 0;
-    int points = 0;
+    int seconds = engine->GetTime();
+    int points;
     int multiplier =1;
     int help = 1;
     int move = 10;
@@ -42,11 +42,11 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
         
         if(seconds%10 == 0 && seconds!=0)
         {
-            multiplier+=10;
+            multiplier+=3;
             
         }
 
-        if(points>=100*help && points <10000*help)
+        if(engine->GetPoints()>=100*help && engine->GetPoints() <10000*help)
         {
             move-=1;
             help+=100;
@@ -57,8 +57,10 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
             mvwprintw(points_window, 2, 7, "Points");
             
         }
-        points=points+multiplier;
+        points=engine->GetPoints()+multiplier;
+        engine->SetPoints(points);
         seconds++;
+        engine->SetTime(seconds);
         mvwprintw(points_window, 1, move, "%d", points);
         sleep(1);
     }
@@ -66,6 +68,7 @@ void Counter(WINDOW* counter_window, WINDOW* points_window) {
 
 void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
     curs_set(0);
+    int bonus =0;
     while (running)
     {
         engine->GenerateStar();
@@ -84,7 +87,8 @@ void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
             }
             if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() == true)
             {
-                engine->AddPoints(100);
+                bonus=engine->GetTime() * 5;
+                engine->AddPoints(bonus);
             }
             if(star->IsBonus()) {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '+');
@@ -162,7 +166,7 @@ int main(int argc, char ** argv)
 
     std::thread t1(MovePlayer, p, win);
     std::thread t2(GenerateStars, engine, win, p);
-    std::thread t3(Counter, counter_window, points_window);
+    std::thread t3(Counter, counter_window, points_window, engine);
     
     t3.join();
     t2.join();
