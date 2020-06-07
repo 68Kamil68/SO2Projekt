@@ -91,7 +91,7 @@ void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
             {
                 if(star->IsBonus() != true) {
                     running = false;
-                } else
+                } else if(!star->isClaimed())
                 {
                     bonus = engine->GetTime() * 5;
                     engine->AddPoints(bonus);
@@ -123,6 +123,13 @@ void MovePlayer(Player* p, WINDOW* win, Engine* engine) {
             {
                 if(engine->stars[i]->IsBonus() != true) {
                     running = false;
+                } else if(!engine->stars[i]->isClaimed())
+                {
+                    int bonus = engine->GetTime() * 5;
+                    engine->AddPoints(bonus);
+                    engine->stars[i]->Claim();
+                    wrefresh(win);
+                    continue;
                 }
         }
         wrefresh(win);

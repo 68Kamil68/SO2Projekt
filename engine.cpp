@@ -18,7 +18,7 @@ void Engine::GenerateStar() {
     }
     Star *star = new Star(random_y, bonus, gamespeed, 1);
     this->stars.push_back(star);
-    usleep(600000);
+    usleep(600000/((time+1)/10));
 }
 
 void Engine::AddPoints(int p){
