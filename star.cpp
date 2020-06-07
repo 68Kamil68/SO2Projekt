@@ -21,10 +21,16 @@ bool Star:: IsBonus() {
     } else
     {
         return false;
-    }
-      
+    }     
 }
 
+bool Star::isClaimed(){
+    return _isClaimed;
+}
+
+void Star::Claim() {
+    _isClaimed = true;
+}
 std::tuple<int, int> Star:: GetCoords() {
     return std::make_tuple(_y, _x);
 }

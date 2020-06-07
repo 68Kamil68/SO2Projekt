@@ -66,13 +66,19 @@ void Counter(WINDOW* counter_window, WINDOW* points_window, Engine *engine) {
     }
 }
 
+void Generate(Engine* engine){
+    engine->GenerateStar();
+}
+
 void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
     curs_set(0);
     int bonus =0;
     while (running)
     {
-        engine->GenerateStar();
+        std::thread tt1(Generate, engine);
+        tt1.join();
         for(int i = 0; i < engine->stars.size(); i++) {
+            wrefresh(win);
             Star * star = engine->stars.at(i);
             std::tuple<int, int> coords = star->GetCoords();
             mvwaddch(win, std::get<0>(coords), std::get<1>(coords), ' ');
@@ -81,52 +87,49 @@ void GenerateStars(Engine* engine, WINDOW* win, Player* player) {
             }
             star->Move();
             coords = star->GetCoords();
-            if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() != true)
+            if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)))
             {
-                running = false;
+                if(star->IsBonus() != true) {
+                    running = false;
+                } else
+                {
+                    bonus = engine->GetTime() * 5;
+                    engine->AddPoints(bonus);
+                    star->Claim();
+                    wrefresh(win);
+                    continue;
+                }     
             }
-            if ((std::get<0>(player->GetCoords()) == std::get<0>(coords)) && (std::get<1>(player->GetCoords()) == std::get<1>(coords)) && star->IsBonus() == true)
-            {
-                bonus=engine->GetTime() * 5;
-                engine->AddPoints(bonus);
-            }
-            if(star->IsBonus()) {
+            if(star->IsBonus() && !star->isClaimed()) {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '+');
-            } else
+            } else if(!star->IsBonus())
             {
                 mvwaddch(win, std::get<0>(coords), std::get<1>(coords), '*');
             }
-            wrefresh(win);
             usleep(100);
         }
     }
 }
 
-void MovePlayer(Player* p, WINDOW* win) {
+void MovePlayer(Player* p, WINDOW* win, Engine* engine) {
     while (running)
     {
         curs_set(0);
         p->display();
         p->getMove();
-        wrefresh(win);
-        usleep(100);
-    }
-    //exit(0);
-}
-
-void CollisionDetector(Player* player, Engine* engine){
-    while (running)
-    {
-        int size = engine->stars.size();
-        if(size != 0 ){
-            for (int i = 0; i < size; i++)
+        for(int i = 0; i < engine->stars.size(); i++) {
+            std::tuple<int, int> coord = engine->stars[i]->GetCoords();
+            if ((std::get<0>(p->GetCoords()) == std::get<0>(coord)) && (std::get<1>(p->GetCoords()) == std::get<1>(coord)))
             {
-                std::tuple<int, int> coords = engine->stars[i]->GetCoords();
-
-            }
+                if(engine->stars[i]->IsBonus() != true) {
+                    running = false;
+                }
         }
-    }  
+        wrefresh(win);
+    }
 }
+}
+
 
 int main(int argc, char ** argv)
 {
@@ -164,7 +167,7 @@ int main(int argc, char ** argv)
     Engine * engine = new Engine();
     running = true; 
 
-    std::thread t1(MovePlayer, p, win);
+    std::thread t1(MovePlayer, p, win, engine);
     std::thread t2(GenerateStars, engine, win, p);
     std::thread t3(Counter, counter_window, points_window, engine);
     
