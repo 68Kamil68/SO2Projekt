@@ -45,7 +45,7 @@ void Counter(WINDOW* counter_window, WINDOW* points_window, Engine *engine) {
             multiplier+=3;
             
         }
-
+        
         if(engine->GetPoints()>=100*help && engine->GetPoints() <10000*help)
         {
             move-=1;
@@ -145,34 +145,90 @@ int main(int argc, char ** argv)
     WINDOW * win = newwin(h, w, startY, startX);
     WINDOW * counter_window = newwin(h1, w1, startY1, startX1);
     WINDOW * points_window = newwin(h2, w2, startY2, startX2);
+    WINDOW * menu_win = newwin(15, 80, 10, 10);
     refresh();
 
-    box(win, 0, 0);
-    mvwprintw(win, 24, 35, "Falling asteroids game");
-    wrefresh(win);
 
-    box(counter_window, 0, 0);
-    mvwprintw(counter_window, 2, 8, "Time");
-    wrefresh(counter_window);
-
-    box(points_window, 0, 0);
-    mvwprintw(points_window, 2, 7, "Points");
-    wrefresh(points_window);
-
+    
     Player * p =new Player(win, 15,15, '#');
 
     Engine * engine = new Engine();
     running = true; 
 
-    std::thread t1(MovePlayer, p, win);
-    std::thread t2(GenerateStars, engine, win, p);
-    std::thread t3(Counter, counter_window, points_window, engine);
+    //std::thread t1(MovePlayer, p, win);
+    //std::thread t2(GenerateStars, engine, win, p);
+    //std::thread t3(Counter, counter_window, points_window, engine);
     
-    t3.join();
-    t2.join();
-    t1.join();
+    //t3.join();
+    //t2.join();
+    //t1.join();
+
 
     //endwin();
+    keypad(menu_win, true);
+
+    string choices[3] = {"PLAY", "HOW TO PLAY", "EXIT"};
+    int move;
+    int choice;
+
+    int highlight = 0;
+
+    while(1)
+    {  
+        box(menu_win, 0, 0);
+        mvwprintw(menu_win, 14, 30, "MENU");
+        wrefresh(menu_win);
+        for(int i=0; i<3; i++)
+        {
+            if(i == highlight)
+            wattron(menu_win, A_REVERSE);
+            mvwprintw(menu_win, i+1, 2, choices[i].c_str());
+            wattroff(menu_win, A_REVERSE);
+        }
+        move = wgetch(menu_win);
+
+        switch(move)
+        {
+            case 's':
+                mvwprintw(menu_win, 15, 20, "Witojta");
+                break;
+            case KEY_UP:
+                highlight--;
+                if(highlight == -1)
+                    highlight = 0;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if(highlight == 3)
+                    highlight = 2;
+                break;
+            default:
+                break;
+        }
+
+        if(choices[highlight].c_str() == "PLAY"){
+
+            box(win, 0, 0);
+            mvwprintw(win, 24, 35, "Falling asteroids game");
+            wrefresh(win);
+
+            box(counter_window, 0, 0);
+            mvwprintw(counter_window, 2, 8, "Time");
+            wrefresh(counter_window);
+
+            box(points_window, 0, 0);
+            mvwprintw(points_window, 2, 7, "Points");
+            wrefresh(points_window);
+
+            std::thread t1(MovePlayer, p, win);
+            std::thread t2(GenerateStars, engine, win, p);
+            std::thread t3(Counter, counter_window, points_window, engine);
+            t3.join();
+            t2.join();
+            t1.join();
+        }
+        
+    }
 
     return 0;
 }
